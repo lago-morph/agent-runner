@@ -10,28 +10,39 @@
       "id": "sub-01",
       "title": "OpenHands GitHub mixin patterns + Jira manager",
       "branch": "claude/parallelize-with-subagents-p4Opo--sub-01",
-      "status": "pending",
+      "status": "merged",
       "pr_number": null,
-      "tests_delta": null,
-      "issues": []
+      "tests_delta": "no tests added",
+      "issues": [],
+      "report_path": "research/05-openhands-github-mixins-jira.md",
+      "headline": "Port get_authenticated_git_url verbatim when Stage 4 adds a second provider — Azure DevOps + Bitbucket DC URL conventions are non-rederivable from upstream docs."
     },
     {
       "id": "sub-02",
       "title": "AE book remaining operational chapters",
       "branch": "claude/parallelize-with-subagents-p4Opo--sub-02",
-      "status": "pending",
+      "status": "merged",
       "pr_number": null,
-      "tests_delta": null,
-      "issues": []
+      "tests_delta": "no tests added",
+      "issues": [
+        "Fetch issue #15 (wrong slugs - all 404)",
+        "Fetch issue #16 (interim retry that did not re-fire workflow)",
+        "Fetch issue #17 (succeeded, 10 URLs at HTTP 200)",
+        "PLAN.md cluster wording was inaccurate: chapter-7 is 'Patterns', not 'architecture / context engineering'"
+      ],
+      "report_path": "research/06-ae-book-remaining-chapters.md",
+      "headline": "Ralph Wiggum's 'state persists in commits, not context windows' (§7/4) is the structural twin of agent-runner's rate-limit-resume loop."
     },
     {
       "id": "sub-03",
       "title": "Anthropic native OAuth-refresh shipping status check",
       "branch": "claude/parallelize-with-subagents-p4Opo--sub-03",
-      "status": "pending",
+      "status": "merged",
       "pr_number": null,
-      "tests_delta": null,
-      "issues": []
+      "tests_delta": "no tests added",
+      "issues": [],
+      "report_path": "research/07-oauth-refresh-status-watch.md",
+      "headline": "Trigger NOT fired: keep scripts/refresh_oauth.py and re-check on a 4-week cadence."
     }
   ]
 }
