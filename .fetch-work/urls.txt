@@ -35,3 +35,13 @@ https://www.jayminwest.com/agentic-engineering-book/10-practitioner-toolkit/6-en
 https://www.jayminwest.com/agentic-engineering-book/1-foundations
 https://www.jayminwest.com/agentic-engineering-book/2-models
 https://www.jayminwest.com/agentic-engineering-book/3-prompting
+https://www.jayminwest.com/agentic-engineering-book/1-foundations/1-twelve-leverage-points
+https://www.jayminwest.com/agentic-engineering-book/2-prompt
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/1-prompt-types
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/2-structuring
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/3-language
+https://www.jayminwest.com/agentic-engineering-book/3-model
+https://www.jayminwest.com/agentic-engineering-book/3-model/1-model-selection
+https://www.jayminwest.com/agentic-engineering-book/3-model/2-model-behavior
+https://www.jayminwest.com/agentic-engineering-book/3-model/3-model-limitations
+https://www.jayminwest.com/agentic-engineering-book/3-model/5-model-evaluation
