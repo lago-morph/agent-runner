@@ -32,3 +32,6 @@ https://www.jayminwest.com/agentic-engineering-book/9-mental-models/6-design-as-
 https://www.jayminwest.com/agentic-engineering-book/10-practitioner-toolkit/1-claude-code
 https://www.jayminwest.com/agentic-engineering-book/10-practitioner-toolkit/3-ide-integrations
 https://www.jayminwest.com/agentic-engineering-book/10-practitioner-toolkit/6-enterprise-context-tools
+https://www.jayminwest.com/agentic-engineering-book/1-foundations
+https://www.jayminwest.com/agentic-engineering-book/2-models
+https://www.jayminwest.com/agentic-engineering-book/3-prompting
