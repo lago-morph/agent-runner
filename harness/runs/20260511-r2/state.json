@@ -1,0 +1,40 @@
+{
+  "run_id": "20260511-r2",
+  "goal": "Execute Round-2 research from research/PLAN.md: OAuth refresh forks, AE book exec-layer chapters, OpenHands SDK git-provider abstraction.",
+  "spec_path": "research/PLAN.md",
+  "feature_branch": "claude/research-merge-branches-wN3BO",
+  "conflict_strategy": "fail",
+  "max_parallel": 3,
+  "subtasks": [
+    {
+      "id": "sub-01",
+      "title": "claude-code-action OAuth refresh forks",
+      "branch": "claude/research-merge-branches-wN3BO--sub-01",
+      "report_path": "research/02-oauth-refresh-forks.md",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    },
+    {
+      "id": "sub-02",
+      "title": "AE book execution-layer chapters",
+      "branch": "claude/research-merge-branches-wN3BO--sub-02",
+      "report_path": "research/03-ae-book-exec-layer.md",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    },
+    {
+      "id": "sub-03",
+      "title": "OpenHands SDK git-provider abstraction",
+      "branch": "claude/research-merge-branches-wN3BO--sub-03",
+      "report_path": "research/04-openhands-sdk-git-provider.md",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    }
+  ]
+}
