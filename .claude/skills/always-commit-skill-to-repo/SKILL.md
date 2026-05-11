@@ -58,7 +58,7 @@ Whenever you create or modify anything that should outlive the session:
    - **Fix CI failures.** Red checks block merge; don't paper over them with re-runs unless the failure is genuinely flaky.
    - **Address every review comment.** Either change the code or reply with a reason. Unresolved threads are blockers in practice.
    - **Resolve conflicts with `main`** by rebasing or merging `main` into the branch. Don't let a PR rot behind the trunk.
-   - **Offer to subscribe to PR activity** when the user wants ongoing automation: call `subscribe_pr_activity` so CI and review events wake the session.
+   - **Subscribe to PR activity by default.** Immediately after creating a PR, call `mcp__github__subscribe_pr_activity` on it. CI failures, review comments, and merge events then arrive as `github-webhook-activity` messages that wake the session — exactly what "keep the PR current until it is merged" requires. Skip only if the user has explicitly said not to subscribe for *this* PR; do not ask first.
    - **If the session ends with the PR still open**, that's in-flight work — record it per the [in-flight-workflow-tracking](../in-flight-workflow-tracking/SKILL.md) skill so the next session picks up the thread.
 
    The PR is "done" only when it has been merged or explicitly closed. A still-open PR with stale description, red CI, or unresolved threads is a worse state than no PR at all — it falsely signals "ready for review."
