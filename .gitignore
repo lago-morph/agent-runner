@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude Code worktree isolation directory (ephemeral subagent worktrees)
+.claude/worktrees/

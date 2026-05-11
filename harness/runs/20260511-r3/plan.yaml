@@ -1,0 +1,37 @@
+run_id: 20260511-r3
+goal: Round 3 research — investigate the three future-research clusters from research/PLAN.md
+feature_branch: claude/parallelize-with-subagents-p4Opo
+subtasks:
+  - id: sub-01
+    title: OpenHands GitHub mixin patterns + Jira manager
+    description: >-
+      Body-read 4 OpenHands source files (GitHub repos.py + resolver.py, provider.py
+      lines 495-651, enterprise jira_manager.py) and produce report 05 documenting
+      borrowed-not-reinvented patterns: pagination + GraphQL shape, GitHub-Resolver
+      auto-link issue→PR logic, get_authenticated_git_url URL-construction (Azure
+      DevOps + Bitbucket DC subtleties), and the JiraView shape + OAuth handshake +
+      start_job semantics.
+    files_touched:
+      - research/05-openhands-github-mixins-jira.md
+    branch: claude/parallelize-with-subagents-p4Opo--sub-01
+  - id: sub-02
+    title: AE book remaining operational chapters
+    description: >-
+      Open a [fetch-urls] issue for the AE book chapter-7 (architecture / context
+      engineering) subchapters and remaining 8/x subchapters. Drain the fetch,
+      read, and produce report 06 covering execution-layer-relevant findings.
+      jayminwest.com is blocked from sandbox so this requires the fetch workflow.
+    files_touched:
+      - research/06-ae-book-remaining-chapters.md
+      - research/fetched/issue-N/  # N assigned by fetch workflow
+    branch: claude/parallelize-with-subagents-p4Opo--sub-02
+  - id: sub-03
+    title: Anthropic native OAuth-refresh shipping status check
+    description: >-
+      Operational watch — check anthropics/claude-code-action issue #727 for
+      progress, and inspect the live action.yml for any new claude_code_refresh_token
+      input. Produce a brief report 07 stating whether the trigger to retire
+      scripts/refresh_oauth.py has fired.
+    files_touched:
+      - research/07-oauth-refresh-status-watch.md
+    branch: claude/parallelize-with-subagents-p4Opo--sub-03

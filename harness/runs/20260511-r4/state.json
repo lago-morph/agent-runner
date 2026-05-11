@@ -1,0 +1,52 @@
+{
+  "run_id": "20260511-r4",
+  "goal": "Round 4 research: investigate the three actionable future-research clusters from PLAN.md (post-Round-3); skip the OAuth-refresh recurring watch (next due ~2026-06-08).",
+  "spec_path": "research/PLAN.md",
+  "feature_branch": "claude/parallelize-with-subagents-p4Opo",
+  "conflict_strategy": "fail",
+  "max_parallel": 4,
+  "subtasks": [
+    {
+      "id": "r4-sub-01",
+      "title": "AE book chapters 4 (Context) + 5 (Tool Use) + chapter 9-10 unread subchapters",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-01",
+      "status": "merged",
+      "pr_number": null,
+      "tests_delta": "no tests added",
+      "issues": [
+        "Fetch issue #19 (chapter index probes — 1 ❌ on /5-tools, 3 ✅ on real chapter slugs)",
+        "Fetch issue #20 (20 subchapter URLs all ✅ HTTP 200)",
+        "Surprise: chapter 5 slug is `5-tool-use`, not `5-tools`; chapter 9 = Mental Models; chapter 10 = Practitioner Toolkit",
+        ".fetch-work/urls.txt merge conflicts on both fetch merges resolved by union (kept all historical fetches)"
+      ],
+      "report_path": "research/08-ae-book-context-tools.md",
+      "headline": "Raschka's principle (cited via §10/1 Claude Code): apparent model quality is frequently context quality in disguise; first audit target should be the harness, not the model — motivates a Layer-0 outer-harness audit step ahead of report 06's Core-Four diagnostic tree."
+    },
+    {
+      "id": "r4-sub-02",
+      "title": "OpenHands resolver.py GraphQL query strings (deferred from report 05)",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-02",
+      "status": "merged",
+      "pr_number": null,
+      "tests_delta": "no tests added",
+      "issues": [
+        "File is `queries.py` not `graphql_queries.py` (report 05 §3 hypothesis was wrong — corrected in report 09)"
+      ],
+      "report_path": "research/09-openhands-graphql-queries.md",
+      "headline": "Three resolver GraphQL strings live in `openhands/app_server/integrations/github/queries.py`; per-thread root preview uses `comments(first: 1)` so the matcher only pays for the one comment it needs; `updatedAt` is NOT requested in Query 3 so the resolver silently falls back to epoch-0."
+    },
+    {
+      "id": "r4-sub-03",
+      "title": "OpenHands provider pagination beyond GitHub (GitLab/Bitbucket/AzureDevOps repos.py)",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-03",
+      "status": "merged",
+      "pr_number": null,
+      "tests_delta": "no tests added",
+      "issues": [
+        "URL drift: `bitbucket_dc/service/repos.py` 404; the actual directory is `bitbucket_data_center/` and is single-file with no service/ subdirectory and no pagination logic (excluded from comparison)."
+      ],
+      "report_path": "research/10-openhands-provider-pagination.md",
+      "headline": "Four non-GitHub providers do NOT converge: GitLab + Forgejo reuse GitHub's Link rel=next header (default), Bitbucket Cloud uses body-field next URL (override), Azure DevOps has no cursor and slices client-side (override). Recommended `_paginate` Protocol = GitHub-style default (covers 3/5) + per-provider overrides for Bitbucket Cloud and Azure DevOps."
+    }
+  ]
+}

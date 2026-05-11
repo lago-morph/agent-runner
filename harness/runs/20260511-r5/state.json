@@ -1,0 +1,27 @@
+{
+  "run_id": "20260511-r5",
+  "goal": "Round 5 wrap-up: AE book chapters 1+2+3 (the only remaining unconditionally-actionable cluster from PLAN.md).",
+  "spec_path": "research/PLAN.md",
+  "feature_branch": "claude/parallelize-with-subagents-p4Opo",
+  "conflict_strategy": "fail",
+  "max_parallel": 1,
+  "subtasks": [
+    {
+      "id": "r5-sub-01",
+      "title": "AE book chapters 1 (Foundations) + 2 (Prompt) + 3 (Model)",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r5-sub-01",
+      "status": "merged",
+      "pr_number": null,
+      "tests_delta": "no tests added",
+      "issues": [
+        "Fetch issue #21 (subagent's first probe with brief's wrong slugs `2-models`/`3-prompting` — silent SPA 404)",
+        "Fetch issue #22 (corrected probe — found chapter 2 = `2-prompt`, chapter 3 = `3-model`)",
+        "Fetch issue #23 (body fetch — 10 URLs all ✅ HTTP 200)",
+        "Brief inverted chapters 2 and 3: chapter 2 is 'Prompt' (singular), chapter 3 is 'Model' (singular). Third instance of slug-paraphrase failure across rounds 3/4/5.",
+        "SPA silent-404 detected as ~6 KB nav-skeleton response — worth a process-note update."
+      ],
+      "report_path": "research/11-ae-book-foundations-models-prompting.md",
+      "headline": "Chapters 1/2/3 are ~70% recap of reports 03/06/08 but contain three net-new contributions: Rabanser et al. arXiv:2602.16666 (capability-reliability gap academic citation), Twelve Leverage Points + Anti-Patterns by Leverage Level catalog (chapter 1 — names 'Isolated Prompting' and 'Tool Proliferation'), and the compound-error math (p^n) sharpening max_turns defaults-low rationale. 11 itemized DESIGN.md edit suggestions in §5."
+    }
+  ]
+}
