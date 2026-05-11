@@ -19,26 +19,35 @@ If the source is paywalled (Every.to chain-of-thought past the visible portion; 
 
 ## What it does
 
-The repository's `.github/workflows/fetch-blocked-urls.yml` workflow does the work. When you file a labelled issue:
+The repository's `.github/workflows/fetch-blocked-urls.yml` workflow does the work. When the `fetch-urls` label is applied to an issue with a JSON URL list in its body:
 
-1. Workflow triggers on `issues: opened | edited | labeled | reopened` (and supports `workflow_dispatch` for re-runs). Every event spins up a runner so the gate decisions are visible in the Actions UI logs — this is deliberate; an earlier job-level `if:` gate silent-skipped without leaving evidence.
-2. **Label gate.** The workflow's first logged step checks the issue carries the `fetch-urls` label and exits cleanly otherwise. The label is the security boundary (see *Authorization model* below).
-3. URLs are extracted from the issue body (`extract_urls.py`) — bare `https://…`, markdown `[text](url)`, and URLs inside fenced code blocks all work. Duplicates dropped (first occurrence wins). Trailing punctuation (`.`, `,`, `;`, `:`, `!`, `?`, quotes) is stripped.
+1. Workflow triggers **only** on `issues: labeled` (plus `workflow_dispatch` for manual re-runs). It does NOT run on `opened`, `edited`, or `reopened` — applying the `fetch-urls` label is the sole affirmative trigger, and editing the issue body afterwards (e.g. to close it with a summary) does not re-fire the fetch.
+2. **Label gate.** The workflow's first logged step checks that the just-applied label (`github.event.label.name`) is exactly `fetch-urls`. Applying any other label to an issue, including an unrelated label on an already-fetched issue, exits cleanly.
+3. URLs are extracted from the issue body (`extract_urls.py`) by parsing **JSON only**:
+   - A bare JSON value (array of URL strings or `{"urls": [...]}` object) at the very top of the body, OR
+   - A ```` ```json ```` fenced code block anywhere in the body (preferred — renders nicely in the GitHub UI).
+   - **Anything else in the body is ignored.** Free-form prose, session-URL footers, decoy links in markdown — all ignored. Only URL strings inside the JSON list are candidates for fetching.
+   - URLs must start with `http://` or `https://`, be ≤ 2048 chars. Non-string entries are filtered. Duplicates dropped (first occurrence wins).
 4. Cap: at most **50 URLs per issue**, 30-second per-URL timeout. Over the cap → the workflow comments and exits non-zero.
 5. Each URL is fetched with `curl -L -A 'Mozilla/5.0 (compatible; agent-runner-fetch/1.0; …)' --max-time 30` (`fetch_urls.sh`).
 6. For each URL, two files are written:
    - `research/fetched/issue-<N>/<sha1prefix>_<sanitized-host-and-tail>.html` — raw response body
    - `research/fetched/issue-<N>/<sha1prefix>_<sanitized-host-and-tail>.md` — best-effort html2text conversion (only written on HTTP 200)
-7. The output is committed to a **new branch** `fetched/issue-<N>` (never to `main`, never to your working branch). If the branch already exists from a previous run, it is force-updated (the issue body is the source of truth).
+7. The output is committed to a **new branch** `fetched/issue-<N>` (never to `main`, never to your working branch). If the branch already exists from a previous run, it is force-updated.
 8. The action comments on the issue with merge instructions and a per-URL summary, then leaves the issue open until you close it.
 
 ## Authorization model
 
-**Label-only.** The `fetch-urls` label is the security gate.
+**The `fetch-urls` label is both the trigger and the security gate.** The workflow listens only for the `labeled` event, and the first step requires `github.event.label.name == 'fetch-urls'`. Applying that specific label is the affirmative authorization signal.
 
-Why this works: in GitHub, only users with **Triage role or higher** can apply labels to issues. A drive-by user opening an issue cannot satisfy the gate even if they know the magic label name — they don't have the permission to apply it. Triage is granted explicitly by a repo admin.
+Why this works: in GitHub, only users with **Triage role or higher** can apply labels to issues. A drive-by user opening an issue cannot satisfy the gate even if they know the magic label name — they don't have the permission to apply it. Triage is granted explicitly by a repo admin. Equally, opening an issue (with or without the label) without the `labeled` event firing does nothing; a runner is not even spun up.
 
-The earlier (pre-2026-05-10) version of this workflow gated on `author_association` instead. That gate silently failed because the **webhook payload and the REST API report different values** for the same user on the same event (the webhook said `CONTRIBUTOR`, the REST API said `MEMBER`). Don't reintroduce that check — the label is sufficient and not subject to that footgun.
+The earlier (pre-2026-05-10) version of this workflow gated on `author_association` instead. That gate silently failed because the **webhook payload and the REST API report different values** for the same user on the same event (the webhook said `CONTRIBUTOR`, the REST API said `MEMBER`). Don't reintroduce that check — the label-as-trigger is sufficient and not subject to that footgun.
+
+Why no `opened`/`edited`/`reopened` triggers: an earlier design listened for all of those, gated on label presence. That worked but had three costs that motivated tightening to label-only:
+- **Wasted runner minutes** on every unrelated issue opened or edited on the repo (the workflow ran, the gate exited, ~10 seconds of CI billed).
+- **Surprise re-fetches.** Editing a fetched issue (e.g. to add a closing summary in the body) re-fired the workflow and force-pushed a new SHA to `fetched/issue-<N>`. The fetch happened on a *closed* issue, which is not what the author intended.
+- **Muddied intent.** "The label IS the trigger" is a one-line invariant; "the label is a gate inside a workflow that runs on every issue event" is harder to reason about and easier to mis-tune.
 
 The job is also bounded by:
 - `permissions: contents: write, issues: write` — no secrets, no other repos
@@ -46,33 +55,69 @@ The job is also bounded by:
 - **Never pushes to `main`** — always creates `fetched/issue-<N>`
 - No `if: ${{ secrets.X != '' }}` checks (which would allow secret-conditioned behavior)
 
-Residual risk: a compromised collaborator account could trigger fetches of arbitrary URLs. The action does not execute fetched content — it only stores it as files. Worst case: a junk branch gets created and is deleted.
+Residual risk: a compromised collaborator account with Triage role could apply the label to arbitrary issues. The action does not execute fetched content — it only stores it as files. Worst case: a junk branch gets created and is deleted.
 
 ## Usage from this session
 
-Use the `gh` CLI. Standard template:
+The issue body **must** start with a JSON URL list. Two accepted shapes:
 
-```bash
+```json
+["https://example.com/page", "https://another.example/article"]
+```
+
+or, with named field for future extensibility:
+
+```json
+{"urls": ["https://example.com/page"]}
+```
+
+A ```` ```json ```` fenced code block anywhere in the body is also accepted (and recommended — it renders nicely). Anything outside the JSON — context notes, session-URL footers, decoy links in prose — is **ignored**.
+
+### Canonical `gh` CLI template
+
+(Outer fence is four backticks so the inner ```` ```json ```` renders literally.)
+
+````bash
 gh issue create \
   --label fetch-urls \
   --title "[fetch-urls] <short description>" \
   --body "$(cat <<'EOF'
-URLs to fetch (one per line; markdown links are accepted):
-
-- https://example.com/some-page
-- https://another.example.com/article
-- https://third.example/post?id=42
-
-Context (optional): why we need these / which research thread this serves.
-EOF
-)"
+```json
+{
+  "urls": [
+    "https://example.com/some-page",
+    "https://another.example.com/article"
+  ]
+}
 ```
 
-Notes:
-- The `fetch-urls` label is mandatory; the workflow exits cleanly without it. If the label doesn't exist in the repo yet, create it once via `gh label create fetch-urls --description "Trigger fetch-blocked-urls.yml workflow"`.
-- One URL per line is safest. List markers (`-`, `*`, `+`) are tolerated. Markdown link syntax `[text](url)` is parsed correctly. Bare URLs inline in prose also work — the extractor picks up every `http(s)://...` match and deduplicates.
-- The issue **title** is convention only (`[fetch-urls] …`). The workflow does not read the title for gating.
+Context (optional, IGNORED by the workflow): why we need these / which
+research thread this serves.
+EOF
+)"
+````
+
+### Canonical MCP path (preferred from this session)
+
+```python
+mcp__github__issue_write(
+    method="create",
+    owner="lago-morph",
+    repo="agent-runner",
+    title="[fetch-urls] <short description>",
+    labels=["fetch-urls"],
+    body='```json\n{"urls": ["https://example.com/page"]}\n```\n\nContext (ignored): ...',
+)
+```
+
+Creating an issue with `labels=["fetch-urls"]` fires the `labeled` event GitHub-side, which triggers the workflow. If you create the issue without the label first, apply it separately to trigger the fetch.
+
+### Notes
+
+- The `fetch-urls` label is the trigger; the workflow does not run without it. The label is auto-created by `mcp__github__issue_write` on first use, or you can create it explicitly: `gh label create fetch-urls --description "Trigger fetch-blocked-urls.yml workflow"`.
+- The issue **title** is convention only (`[fetch-urls] …`). The workflow does not read the title.
 - The `gh` CLI must be authenticated to a user with Triage role or higher in this repo, so it can apply the label. Run `gh auth status` first if uncertain.
+- If the JSON fails to parse or contains zero usable URLs, the workflow comments "No URLs found..." and exits cleanly. No branch is created.
 
 After the action completes (typically 1–3 minutes), you'll see a comment on the issue with per-URL status and merge instructions. To pull the fetched content into your working branch:
 
@@ -81,18 +126,20 @@ git fetch origin fetched/issue-<N>
 git merge --no-ff origin/fetched/issue-<N>
 ```
 
-The action does not auto-close the issue — close it manually once you've merged so other agents know it's handled.
+The action does not auto-close the issue — close it manually once you've merged so other agents know it's handled. **Editing the issue body after the fact does NOT re-fire the workflow.** Use one of the re-run paths below.
 
 ## Re-running against an existing issue
 
-If you need to re-fetch (e.g., a URL was transient and might work now, or you edited the issue body), two paths:
+Editing the issue body does **not** re-fire the workflow (the `edited` trigger is intentionally disabled — see the *Authorization model* section for why). Two paths to re-run:
 
-- **Edit the issue body.** The `edited` trigger re-runs the workflow. The `fetched/issue-<N>` branch is force-updated (history reset) so the latest issue body is the source of truth.
-- **`workflow_dispatch`.** Trigger manually from the Actions UI with `issue_number: <N>`. Useful for testing without editing the issue. Requires `actions:write` (i.e., a repo collaborator).
+- **Remove and re-apply the `fetch-urls` label.** Each `labeled` event triggers a fresh run. The `fetched/issue-<N>` branch is force-updated (history reset) so the latest issue body is the source of truth.
+- **`workflow_dispatch`.** Trigger manually from the Actions UI with `issue_number: <N>`. Bypasses the label gate; only users with `actions:write` (i.e., a repo collaborator) can dispatch.
 
 ```bash
 gh workflow run fetch-blocked-urls.yml -f issue_number=<N>
 ```
+
+If you edit the issue body to change which URLs are fetched, edit first, then re-apply the label — otherwise the re-run will use the *current* body, not the version that was current when the label was first applied. (Both paths use the gh CLI which reads the current body live; the workflow does not store snapshots.)
 
 ## Filename convention
 

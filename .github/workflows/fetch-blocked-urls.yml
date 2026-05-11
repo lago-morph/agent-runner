@@ -11,16 +11,18 @@ name: Fetch Blocked URLs
 # Security model — see .claude/skills/fetch-blocked-urls/SKILL.md for the
 # full discussion.
 #
-#   1. Label gate: the workflow only proceeds when the issue carries the
-#      `fetch-urls` label. Only users with the Triage role or higher (i.e.
-#      explicit repo collaborators) can apply labels, so the label IS the
-#      author check. We avoid `author_association` because the webhook
-#      payload and the REST API can disagree on its value for the same
-#      user on the same event (e.g. webhook reports CONTRIBUTOR while the
-#      REST API reports MEMBER) — every pre-label version of this workflow
-#      silent-skipped because of that. The fetch-urls label must exist in
-#      the repo; creating it on the fly via the issue UI's label picker
-#      is the easiest way.
+#   1. Label is both trigger and gate: this workflow runs only on the
+#      `labeled` event, and only when the just-applied label is exactly
+#      `fetch-urls`. Only users with Triage role or higher can apply
+#      labels in GitHub, so a fetch-urls label event proves the actor
+#      has at least Triage access AND deliberately asked for a fetch.
+#      We avoid `author_association` because the webhook payload and
+#      the REST API can disagree on its value for the same user on the
+#      same event (e.g. webhook reports CONTRIBUTOR while the REST API
+#      reports MEMBER) — every pre-label version of this workflow
+#      silent-skipped because of that. The fetch-urls label must exist
+#      in the repo; creating it on the fly via the issue UI's label
+#      picker is the easiest way.
 #
 #   2. Permissions are scoped: contents:write (to push the branch) and
 #      issues:write (to comment). No secrets are accessed. The workflow
@@ -36,15 +38,26 @@ name: Fetch Blocked URLs
 
 on:
   issues:
-    # `labeled` covers the common case (issue exists, label applied).
-    # `edited` covers re-running against an already-labeled issue by
-    # editing its body. `opened` covers issues that are created with the
-    # label already attached via the API.
-    types: [opened, edited, labeled, reopened]
+    # Only `labeled` — applying the `fetch-urls` label is the affirmative
+    # authorization signal AND the trigger. We deliberately do NOT listen
+    # for `opened`, `edited`, or `reopened`:
+    #
+    #   - `opened`: a runner would spin up for every issue created on the
+    #     repo just to exit on the label gate. Even though the gate holds,
+    #     burning minutes on unrelated issues is unwanted and obscures
+    #     intent. With this trigger, opening an issue (even with the label
+    #     pre-attached via the API) fires `opened` AND `labeled` — we
+    #     listen for the `labeled` one.
+    #   - `edited`: editing a labeled issue (including to close it with a
+    #     summary comment in the body) silently re-fired the workflow,
+    #     producing surprise re-fetches and re-pushed branches. Removed.
+    #   - `reopened`: not needed; if a re-fetch is desired, remove the
+    #     label and re-apply it (each label application fires `labeled`).
+    types: [labeled]
   # workflow_dispatch lets us re-test against an existing issue without
-  # editing it. Supply the issue number; the workflow reads body via the
-  # gh CLI and bypasses the label gate (only users with actions:write
-  # can dispatch anyway).
+  # touching its labels. Supply the issue number; the workflow reads body
+  # via the gh CLI and bypasses the label gate (only users with
+  # actions:write can dispatch anyway).
   workflow_dispatch:
     inputs:
       issue_number:
@@ -107,18 +120,22 @@ jobs:
         id: label_gate
         if: github.event_name == 'issues'
         env:
-          LABELS_JSON: ${{ toJSON(github.event.issue.labels.*.name) }}
+          JUST_APPLIED: ${{ github.event.label.name }}
         run: |
           set -euo pipefail
-          # The `fetch-urls` label is the security boundary. Only users
-          # with Triage role or higher can apply labels in GitHub, so
-          # the label's presence proves the author has at least triage
-          # access to this repo.
-          if echo "$LABELS_JSON" | grep -q '"fetch-urls"'; then
-            echo "Issue carries the fetch-urls label; proceeding."
+          # The `fetch-urls` label is the security boundary AND the
+          # affirmative trigger. Only users with Triage role or higher
+          # can apply labels in GitHub, so a `labeled` event with
+          # event.label.name == 'fetch-urls' proves the actor has at
+          # least Triage access AND deliberately requested a fetch.
+          # We check the JUST-applied label rather than label-presence,
+          # because applying an unrelated label (e.g. `bug`) to an
+          # already-fetched issue must NOT trigger a re-fetch.
+          if [ "$JUST_APPLIED" = "fetch-urls" ]; then
+            echo "fetch-urls was just applied; proceeding."
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Issue does not carry the fetch-urls label; exiting cleanly."
+            echo "Just-applied label is '$JUST_APPLIED', not 'fetch-urls'; exiting cleanly."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
           fi
 
