@@ -11,9 +11,11 @@
       "title": "claude-code-action OAuth refresh forks",
       "branch": "claude/research-merge-branches-wN3BO--sub-01",
       "report_path": "research/02-oauth-refresh-forks.md",
-      "status": "pending",
-      "pr_number": null,
-      "tests_delta": null,
+      "status": "merged",
+      "merge_strategy": "cherry-pick (file-only) to avoid concurrent-execution contamination",
+      "source_commit": "90556496b4de710bb3d7da2f8b0d964b6bb607d6",
+      "lines": 279,
+      "headline": "Adapt grll/claude-code-base-action's JIT refresh into scripts/refresh_oauth.py on a 6h cron; reverse secret-update order so expires_at is written last; add Slack alerting + retry.",
       "issues": []
     },
     {
@@ -21,9 +23,12 @@
       "title": "AE book execution-layer chapters",
       "branch": "claude/research-merge-branches-wN3BO--sub-02",
       "report_path": "research/03-ae-book-exec-layer.md",
-      "status": "pending",
-      "pr_number": null,
-      "tests_delta": null,
+      "status": "merged",
+      "merge_strategy": "cherry-pick (file-only) to avoid concurrent-execution contamination",
+      "source_commit": "a4fc725ca573ed6d654b9c07e9954239eea19845",
+      "lines": 453,
+      "headline": "Six AE chapters supply vocabulary + discipline; chapter 8/3 has zero rate-limit content (validating our resume-loop as novel territory); 8 specific DESIGN.md updates listed in section 8.",
+      "fetch_issues": [12, 13],
       "issues": []
     },
     {
@@ -31,10 +36,18 @@
       "title": "OpenHands SDK git-provider abstraction",
       "branch": "claude/research-merge-branches-wN3BO--sub-03",
       "report_path": "research/04-openhands-sdk-git-provider.md",
-      "status": "pending",
-      "pr_number": null,
-      "tests_delta": null,
-      "issues": []
+      "status": "merged",
+      "merge_strategy": "cherry-pick (file-only) to avoid concurrent-execution contamination",
+      "source_commit": "1334017",
+      "lines": 515,
+      "headline": "Found at OpenHands/OpenHands openhands/app_server/integrations/ — 13-method GitService Protocol + ProviderHandler orchestrator + 6 concrete providers; issue trackers are a separate Manager[ViewT] ABC.",
+      "issues": ["sub-03 inherited contamination from sub-02 (4 stale fetched-branch merge commits); resolved by cherry-picking only report 04 onto feature branch"]
     }
+  ],
+  "lessons_learned": [
+    "Concurrent subagents in a shared sandbox workdir stomp on each other's branches. Future fanout dispatch should use isolation: \"worktree\" in the Agent calls so each subagent has its own workdir.",
+    "Cherry-picking the deliverable files directly from each sub-branch — instead of doing 3-way merges — is a clean fallback when sub-branches got cross-contaminated. Each subagent's deliverables were file-bounded (one report per branch) which made this trivial.",
+    "Fetch workflow body extraction: issue #12 failed because its body format wasn't recognized by extract_urls.py. Subagent retried with the JSON-in-code-block format from prior issues #5/#6 as #13, which succeeded. The pattern is: copy the format from the previous successful fetch issue.",
+    "MCP github tools' repository-scope restriction (lago-morph/agent-runner only) means subagents can't use mcp__github__get_file_contents for external repos like grll/* or OpenHands/* — must use raw.githubusercontent.com + WebFetch."
   ]
 }
