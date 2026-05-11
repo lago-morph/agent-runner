@@ -1,6 +1,10 @@
-https://www.jayminwest.com/agentic-engineering-book/6-harnesses/2-harness-stack
-https://www.jayminwest.com/agentic-engineering-book/6-harnesses/4-harness-as-control-system
-https://www.jayminwest.com/agentic-engineering-book/6-harnesses/5-harness-engineering
-https://www.jayminwest.com/agentic-engineering-book/6-harnesses/6-security-permissions-trust
-https://www.jayminwest.com/agentic-engineering-book/8-practices/3-cost-and-latency
-https://www.jayminwest.com/agentic-engineering-book/8-practices/4-production-concerns
+https://www.jayminwest.com/agentic-engineering-book/1-foundations/1-twelve-leverage-points
+https://www.jayminwest.com/agentic-engineering-book/2-prompt
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/1-prompt-types
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/2-structuring
+https://www.jayminwest.com/agentic-engineering-book/2-prompt/3-language
+https://www.jayminwest.com/agentic-engineering-book/3-model
+https://www.jayminwest.com/agentic-engineering-book/3-model/1-model-selection
+https://www.jayminwest.com/agentic-engineering-book/3-model/2-model-behavior
+https://www.jayminwest.com/agentic-engineering-book/3-model/3-model-limitations
+https://www.jayminwest.com/agentic-engineering-book/3-model/5-model-evaluation
