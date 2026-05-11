@@ -1,6 +1,6 @@
 # Research Plan
 
-Last updated: 2026-05-11 (post Round 4)
+Last updated: 2026-05-11 (post Round 5)
 
 ## In-flight
 
@@ -9,6 +9,11 @@ Last updated: 2026-05-11 (post Round 4)
 When in-flight items appear here, the per-item shape (identifier, opened, completion signal, action when complete, fallback, expected wall time, affects) is documented in `.claude/skills/in-flight-workflow-tracking/SKILL.md`. If any item lands here that has a "next session" handoff, promote the drain step to a `## MANDATORY FIRST ACTION` block above this section per that skill.
 
 ## Recently completed
+
+- **2026-05-11 — Round 5** (single-subagent dispatch, `isolation: "worktree"`): one report landed —
+  - `11-ae-book-foundations-models-prompting.md` (r5-sub-01) — AE book chapters 1 (Foundations), 2 (Prompt — singular slug `2-prompt`), 3 (Model — singular slug `3-model`). Three fetches: probe with brief's wrong slugs (#21, silent-404), corrected probe (#22), body fetch (#23). ~70% recap of reports 03/06/08 + three net-new contributions (Rabanser arXiv:2602.16666, Twelve Leverage Points + Anti-Patterns catalog, compound-error `p^n` math) + 11 itemized DESIGN.md edit suggestions.
+
+  Run state: `harness/runs/20260511-r5/`. Fetch issues **#21** + **#22** + **#23** and sub-branch `claude/parallelize-with-subagents-p4Opo--r5-sub-01` and branches `fetched/issue-{21,22,23}` remain on origin (sandbox proxy blocks deletion); UI cleanup when convenient. Issue #21's silent-404 evidence is intentionally kept open as the verbatim record of the slug-paraphrase failure mode.
 
 - **2026-05-11 — Round 4** (parallel fanout, 3 subagents, all `isolation: "worktree"`): three reports landed —
   - `08-ae-book-context-tools.md` (r4-sub-01) — AE book ch 4 Context + ch 5 Tool Use + ch 9 Mental Models + ch 10 Practitioner Toolkit. Two fetches: index probe (#19) then body fetch (#20). Headline: Raschka's "context quality in disguise" inverts debugging order, motivates Layer-0 outer-harness audit before report 06's Core-Four diagnostic tree.
@@ -52,17 +57,6 @@ Clusters worth investigating in a later round. Per the research-pipeline skill, 
 
 **Effort:** ~5-10 min per check. A `loop` skill task or manual reminder.
 
-### Future research: AE book chapters 1, 2, 3 — and any 4/4 multi-agent-context scope check
-
-**Sources (TOC verbatim per report 08):**
-- `https://www.jayminwest.com/agentic-engineering-book/1-foundations` (TOC TBD via probe)
-- `https://www.jayminwest.com/agentic-engineering-book/2-models` (TOC TBD)
-- `https://www.jayminwest.com/agentic-engineering-book/3-prompting` (TOC TBD)
-
-**Justification:** With Rounds 1, 3, and 4 covering chapters 4, 5, 6, 7, 8, 9, 10 (mostly), the book's first three chapters remain unread. Chapter 2 (Models) and Chapter 3 (Prompting) likely contain background that was implicit in later chapters but not stated; reading them tightens our use of the book's vocabulary. Chapter 1 (Foundations) is probably the highest-recap, lowest-novelty target — read last or skip. Lower priority than Stage-4-driven research below; do this as a "wrapping-up" round before any major DESIGN.md revision.
-
-**Effort:** ~10-15 source files via fetch workflow. Two issues (index probe + body fetch — see Round-4 lesson). ~2 hours total. Single subagent dispatch. **Probe TOC first; cite the verbatim slugs from the index page in the cluster description above when revising PLAN.md.**
-
 ### Future research: OpenHands `comments` resource handlers (review-thread reply posting)
 
 **Sources:**
@@ -92,3 +86,5 @@ Clusters worth investigating in a later round. Per the research-pipeline skill, 
 - **Round 4 lesson — `.fetch-work/urls.txt` merge conflicts are normal on multi-fetch sub-branches.** Resolution is always "keep both lists" (union merge). A future enhancement to `.github/workflows/fetch-blocked-urls.yml` could append rather than overwrite when the file already exists on the target branch.
 - **Round 3 lesson — GitHub MCP scope is repo-locked.** The `mcp__github__*` tools are restricted to `lago-morph/agent-runner` in this session. Cross-repo work (e.g., reading `anthropics/claude-code-action` issues, searching `OpenHands/OpenHands` code) must go through WebFetch. Worth a one-line CLAUDE.md / AGENTS.md note if not already there.
 - **Round 4 lesson — small subtasks are still worth dispatching as subagents.** r4-sub-02 finished in ~2 min on a single small file fetch + 100-line report. The dispatcher gained parallel context window for the larger r4-sub-01 + r4-sub-03 jobs. Don't gate fanout on subtask size.
+- **Round 5 lesson — slug-paraphrase failure is a confirmed three-time pattern.** Three rounds in a row (3, 4, 5), the dispatcher's paraphrase of an external chapter title produced wrong URL slugs that needed correction at probe step. Round 5's case was especially bad — the brief swapped chapters 2 and 3 entirely. The Round 3 + Round 4 rule still stands: cite verbatim slugs from a previously-fetched index page. **For the AE book specifically**, the verified verbatim chapter slugs (post-Round-5) are: `1-foundations`, `2-prompt`, `3-model`, `4-context`, `5-tool-use`, `6-harnesses`, `7-patterns`, `8-practices`, `9-mental-models`, `10-practitioner-toolkit`. Use these directly in any future AE-book PLAN.md cluster.
+- **Round 5 lesson — SPA silent-404s return 200-OK with the navigation skeleton only.** A `jayminwest.com` page that returns ~6 KB of HTML with body content of just the nav-tree is a silent 404 in disguise. The fetch workflow can't tell from the HTTP status. Detection: post-fetch inspection — if the html2text `.md` body is < 8 KB AND contains only the chapter-list navigation skeleton with no chapter title H1, the slug is wrong. A future enhancement to `.github/scripts/fetch_urls.sh` could surface this in the per-URL summary by checking byte counts + grep'ing for nav-only patterns. Until then, drain-step manual inspection is required.
