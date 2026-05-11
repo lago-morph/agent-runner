@@ -1,0 +1,37 @@
+{
+  "run_id": "20260511-r4",
+  "goal": "Round 4 research: investigate the three actionable future-research clusters from PLAN.md (post-Round-3); skip the OAuth-refresh recurring watch (next due ~2026-06-08).",
+  "spec_path": "research/PLAN.md",
+  "feature_branch": "claude/parallelize-with-subagents-p4Opo",
+  "conflict_strategy": "fail",
+  "max_parallel": 4,
+  "subtasks": [
+    {
+      "id": "r4-sub-01",
+      "title": "AE book chapters 4 (Context) + 5 (Tools) + remaining 9-10 subchapters",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-01",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    },
+    {
+      "id": "r4-sub-02",
+      "title": "OpenHands resolver.py GraphQL query strings (deferred from report 05)",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-02",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    },
+    {
+      "id": "r4-sub-03",
+      "title": "OpenHands provider pagination beyond GitHub (GitLab/Bitbucket/AzureDevOps repos.py)",
+      "branch": "claude/parallelize-with-subagents-p4Opo--r4-sub-03",
+      "status": "pending",
+      "pr_number": null,
+      "tests_delta": null,
+      "issues": []
+    }
+  ]
+}
