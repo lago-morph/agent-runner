@@ -1,0 +1,6 @@
+https://www.jayminwest.com/agentic-engineering-book/6-harnesses/2-harness-stack
+https://www.jayminwest.com/agentic-engineering-book/6-harnesses/4-harness-as-control-system
+https://www.jayminwest.com/agentic-engineering-book/6-harnesses/5-harness-engineering
+https://www.jayminwest.com/agentic-engineering-book/6-harnesses/6-security-permissions-trust
+https://www.jayminwest.com/agentic-engineering-book/8-practices/3-cost-and-latency
+https://www.jayminwest.com/agentic-engineering-book/8-practices/4-production-concerns
