@@ -8,3 +8,7 @@ https://www.jayminwest.com/agentic-engineering-book/7-patterns/7-progressive-dis
 https://www.jayminwest.com/agentic-engineering-book/8-practices/1-debugging-agents
 https://www.jayminwest.com/agentic-engineering-book/8-practices/2-evaluation
 https://www.jayminwest.com/agentic-engineering-book/8-practices/6-knowledge-evolution
+https://www.jayminwest.com/agentic-engineering-book/4-context
+https://www.jayminwest.com/agentic-engineering-book/5-tools
+https://www.jayminwest.com/agentic-engineering-book/9-mental-models
+https://www.jayminwest.com/agentic-engineering-book/10-practitioner-toolkit
